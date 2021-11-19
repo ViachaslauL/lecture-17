@@ -6,5 +6,9 @@ public interface AddressDAO {
 
     Address save(Address address);
 
-    Address find(Long id);
+    Address find(Address address);
+
+    boolean update(Address address);
+
+    boolean delete(Address address);
 }

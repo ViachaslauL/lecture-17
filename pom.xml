@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>by.itacademy.javaenterprise.lepnikau.app</groupId>
+    <groupId>by.itacademy.javaenterprise.lepnikau</groupId>
     <artifactId>lecture-17</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -73,12 +73,15 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-artifact-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <artifactId>maven-jar-plugin</artifactId>
                     <configuration>
                         <archive>
-                            <addClasspath>true</addClasspath>
-                            <mainClass>by.itacademy.javaenterprise.lepnikau.app.App</mainClass>
+                            <manifest>
+                                <addClasspath>true</addClasspath>
+                                <mainClass>
+                                    by.itacademy.javaenterprise.lepnikau.App
+                                </mainClass>
+                            </manifest>
                         </archive>
                     </configuration>
                 </plugin>

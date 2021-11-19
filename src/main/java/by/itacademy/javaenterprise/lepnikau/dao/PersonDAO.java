@@ -7,4 +7,8 @@ public interface PersonDAO {
     Person save(Person person);
 
     Person find(Long id);
+
+    boolean update(Person person);
+
+    boolean delete(Person person);
 }

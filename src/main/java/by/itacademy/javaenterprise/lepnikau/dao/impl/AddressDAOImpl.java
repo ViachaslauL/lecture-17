@@ -18,7 +18,7 @@ public class AddressDAOImpl implements AddressDAO {
     }
 
     @Override
-    public Address save(Address address) throws IllegalArgumentException {
+    public Address save(Address address) {
         if (address == null) throw new IllegalArgumentException();
 
         try {
@@ -33,15 +33,64 @@ public class AddressDAOImpl implements AddressDAO {
     }
 
     @Override
-    public Address find(Long id) {
-        Address address = null;
+    public Address find(Address address) {
+        if (address == null) throw new IllegalArgumentException();
 
         try {
-            address = entityManager.find(Address.class, id);
+            address = entityManager.find(Address.class, address.getAddressId());
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
-            entityManager.getTransaction().rollback();
         }
         return address;
+    }
+
+    @Override
+    public boolean update(Address address) {
+        if (address == null) throw new IllegalArgumentException();
+
+        Address foundedAddress = null;
+
+        try {
+            foundedAddress = entityManager.find(Address.class, address.getAddressId());
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+        }
+
+        if (foundedAddress != null) {
+            try {
+                entityManager.getTransaction().begin();
+                entityManager.persist(address);
+                entityManager.getTransaction().commit();
+            } catch (Exception e) {
+                LOG.error(e.getMessage(), e);
+                entityManager.getTransaction().rollback();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean delete(Address address) {
+        if (address == null) throw new IllegalArgumentException();
+
+        try {
+            address = entityManager.find(Address.class, address.getAddressId());
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+        }
+
+        if (address != null) {
+            try {
+                entityManager.getTransaction().begin();
+                entityManager.remove(address);
+                entityManager.getTransaction().commit();
+                return true;
+            } catch (Exception e) {
+                LOG.error(e.getMessage(), e);
+                entityManager.getTransaction().rollback();
+            }
+        }
+        return false;
     }
 }

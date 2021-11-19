@@ -51,6 +51,8 @@ class PersonDAOImplTest {
             personDAO.save(null);
         });
 
+        verify(entityManagerMock, never()).persist(null);
+
     }
 
     @Test
@@ -59,13 +61,16 @@ class PersonDAOImplTest {
         Person person = new Person();
         person.setPersonId(queryId);
 
-        Class<Person> anyObject = Mockito.any();
+        Class<Person> anyClass = Mockito.any();
 
         Long eqValue = Mockito.eq(queryId);
 
-        when(entityManagerMock.find(anyObject, eqValue)).thenReturn(person);
+        when(entityManagerMock.find(anyClass, eqValue)).thenReturn(person);
 
         assertEquals(queryId, personDAO.find(queryId).getPersonId());
+
+        verify(entityManagerMock, times(1))
+                .find(Mockito.<Class<Person>>any(), Mockito.eq(queryId));
     }
 
     @Test
@@ -73,5 +78,81 @@ class PersonDAOImplTest {
         Long queryId = -1L;
 
         assertNull(personDAO.find(queryId));
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            personDAO.find(null);
+        });
+    }
+
+    @Test
+    void updateTest() {
+        Long queryId = 5L;
+        Person person = new Person();
+        person.setPersonId(queryId);
+
+        Class<Person> anyClass = Mockito.any();
+
+        Long eqValue = Mockito.eq(queryId);
+
+        when(entityManagerMock.find(anyClass, eqValue)).thenReturn(person);
+
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransactionMock);
+
+        assertTrue(personDAO.update(person));
+
+        verify(entityManagerMock).find(Mockito.<Class<Person>>any(), Mockito.eq(queryId));
+
+        verify(entityManagerMock).persist(person);
+    }
+
+    @Test
+    void updateTestWithArgumentIsNull() {
+        assertThrows(IllegalArgumentException.class, () ->{
+            personDAO.update(null);
+        });
+    }
+
+    @Test
+    void updateTestNonExistentPerson() {
+        Person person = new Person();
+        person.setPersonId(-1L);
+
+        assertFalse(personDAO.update(person));
+    }
+
+    @Test
+    void deleteTest() {
+        Long queryId = 5L;
+        Person person = new Person();
+        person.setPersonId(queryId);
+
+        Class<Person> anyClass = Mockito.any();
+
+        Long eqValue = Mockito.eq(queryId);
+
+        when(entityManagerMock.find(anyClass, eqValue)).thenReturn(person);
+
+        when(entityManagerMock.getTransaction()).thenReturn(entityTransactionMock);
+
+        assertTrue(personDAO.delete(person));
+
+        verify(entityManagerMock).find(Mockito.<Class<Person>>any(), Mockito.eq(queryId));
+
+        verify(entityManagerMock).remove(person);
+    }
+
+    @Test
+    void deleteTestWithArgumentIsNull() {
+        assertThrows(IllegalArgumentException.class, () ->{
+            personDAO.delete(null);
+        });
+    }
+
+    @Test
+    void deleteTestNonExistentPerson() {
+        Person person = new Person();
+        person.setPersonId(-1L);
+
+        assertFalse(personDAO.delete(person));
     }
 }
